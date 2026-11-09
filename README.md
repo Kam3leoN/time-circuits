@@ -25,7 +25,7 @@ La PWA demande HTTPS en production (ou `localhost`).
 
 ## Mobile first
 
-- **Smartphone en portrait** : invitation à tourner l'écran. **En paysage** : modules à gauche, compteur et commandes en colonne à droite.
+- **Smartphone en portrait** : invitation à tourner l'écran. **En paysage** : compteur et commandes à gauche, modules à droite.
 - Clavier de saisie et réglages sur deux colonnes quand l'écran est bas ; cibles tactiles ≥ 44 px ; vibration légère au toucher.
 - Plein écran avec verrouillage paysage (réglages), installation de l'app (bouton « Installer » quand le navigateur le propose).
 - Hors ligne : tout est mis en cache par le service worker, y compris sons et musique.

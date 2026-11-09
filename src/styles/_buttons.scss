@@ -55,12 +55,16 @@
   }
 }
 
-// Écran bas : commandes sur 2 colonnes à droite des modules.
+// Écran bas : commandes sur 2 colonnes à gauche des modules.
 @media #{$short} {
   .tc-buttons {
     border-radius: 2.6em;
     ul { display: grid; grid-template-columns: repeat(2, auto); border-radius: 2.2em; }
     li:first-child button, li:last-child button, button { border-radius: 1.3em; padding-inline: 0; }
-    li:last-child { grid-column: 1 / -1; justify-self: center; }
+    // Nombre impair (ex. plein écran masqué) : dernière touche sur toute la largeur.
+    ul:has(> li:last-child:nth-child(odd)) > li:last-child {
+      grid-column: 1 / -1;
+      button { width: 100%; }
+    }
   }
 }

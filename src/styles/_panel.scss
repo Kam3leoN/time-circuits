@@ -74,20 +74,27 @@
 @media (prefers-reduced-motion: reduce) { .rotate .ph { animation: none; } }
 @media #{$phone-portrait} { .rotate { display: grid; } }
 
-// Écran bas (smartphone en paysage) : les modules à gauche, compteur + commandes en colonne à droite.
+// Écran bas (smartphone en paysage) : compteur + commandes à gauche, modules à droite.
 // Le panneau gagne ~40 % de taille par rapport à la disposition empilée.
 @media #{$short} {
   .tc {
     --tc-wem: calc(77 + var(--w-ampm) + var(--w-sec) + var(--w-frame) + 18);
     --tc-hem: calc(51 + var(--h-frame));
     grid-template-columns: auto auto;
-    grid-template-areas: 'stack side' 'err side';
-    align-items: center; column-gap: 2em; row-gap: .6em;
+    grid-template-areas:
+      'speed stack'
+      'btns  stack'
+      'btns  err';
+    align-items: center; column-gap: 2em; row-gap: .35em;
   }
   .tc-core, .tc-bottom { display: contents; }
   .tc-stack { grid-area: stack; }
   .tc-rad, .tc-dmc { display: none; }
   .tc-error { grid-area: err; font-size: 1.5em; justify-self: center; }
-  .tc-bottom set-to-88 { grid-area: side; align-self: start; justify-self: center; margin-top: 1em; }
-  .tc-buttons { grid-area: side; align-self: end; margin-bottom: .5em; }
+  // Compteur remonté au-dessus des commandes pour équilibrer la colonne gauche.
+  .tc-bottom set-to-88 {
+    grid-area: speed; align-self: end; justify-self: center;
+    margin: 0 0 .15em; transform: translateY(-.35em);
+  }
+  .tc-buttons { grid-area: btns; align-self: start; margin: 0; }
 }
