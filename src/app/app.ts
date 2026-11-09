@@ -47,7 +47,9 @@ export class App {
     this.bind('bReset', () => this.reset());
     this.bind('bMute', () => this.toggleMute());
     this.bind('bTheme', () => this.toggleTheme());
+    this.bind('bFullscreen', () => { void this.settings.toggleFullscreen(); this.audio.play('button'); });
     this.bind('bOptions', () => { this.setActive('bOptions', true); this.settings.sync(); this.settings.modal.show(); this.audio.play('button'); });
+    if (!document.fullscreenEnabled) $('bFullscreen').hidden = true;
     document.addEventListener('keydown', (e) => this.onKey(e));
 
     this.audio.setMuted(this.s.muted);

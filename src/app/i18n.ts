@@ -4,9 +4,9 @@ import type { Lang } from '../components';
 const fr = {
   appTitle: 'Time Circuits',
   navAria: 'Commandes',
-  bDate: 'clavier', bPower: 'power', bTravel: 'voyage', bReset: 'reset', bMute: 'son', bTheme: 'thème', bOptions: 'options',
+  bDate: 'clavier', bPower: 'power', bTravel: 'voyage', bReset: 'reset', bMute: 'son', bTheme: 'thème', bFullscreen: 'écran', bOptions: 'options',
   tDate: 'Clavier de saisie (D)', tPower: 'Time circuits on / off (P)', tTravel: 'Voyager (X)', tReset: 'Reset (R)',
-  tMute: 'Couper / remettre le son (M)', tTheme: 'Thème du panneau (T)', tOptions: 'Réglages (O)',
+  tMute: 'Couper / remettre le son (M)', tTheme: 'Thème du panneau (T)', tFullscreen: 'Plein écran (F)', tOptions: 'Réglages (O)',
   kpTitle: 'Saisie de date', close: 'Fermer', now: 'MAINTENANT', modesAria: 'Ligne à régler',
   mDest: 'Destination', mPres: 'Présent', mDep: 'Départ',
   kClear: 'EFFACER', kEnter: 'VALIDER', kBack: 'Effacer le dernier chiffre',
@@ -36,9 +36,9 @@ export type Dict = typeof fr;
 const en: Dict = {
   appTitle: 'Time Circuits',
   navAria: 'Controls',
-  bDate: 'keypad', bPower: 'power', bTravel: 'travel', bReset: 'reset', bMute: 'sound', bTheme: 'theme', bOptions: 'settings',
+  bDate: 'keypad', bPower: 'power', bTravel: 'travel', bReset: 'reset', bMute: 'sound', bTheme: 'theme', bFullscreen: 'screen', bOptions: 'settings',
   tDate: 'Keypad (D)', tPower: 'Time circuits on / off (P)', tTravel: 'Travel (X)', tReset: 'Reset (R)',
-  tMute: 'Mute / unmute (M)', tTheme: 'Panel theme (T)', tOptions: 'Settings (O)',
+  tMute: 'Mute / unmute (M)', tTheme: 'Panel theme (T)', tFullscreen: 'Full screen (F)', tOptions: 'Settings (O)',
   kpTitle: 'Date entry', close: 'Close', now: 'NOW', modesAria: 'Row to set',
   mDest: 'Destination', mPres: 'Present', mDep: 'Departed',
   kClear: 'CLEAR', kEnter: 'ENTER', kBack: 'Delete last digit',

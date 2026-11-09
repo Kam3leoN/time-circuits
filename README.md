@@ -7,7 +7,7 @@ Basé sur le projet [kam3leon/time_travel](https://github.com/kam3leon/time_trav
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173 (accessible depuis le téléphone sur le même réseau)
+npm run dev        # http://localhost:5175 (accessible depuis le téléphone sur le même réseau)
 npm run build      # vérifie les types puis produit dist/
 npm run preview    # sert dist/ comme en production (service worker actif)
 ```

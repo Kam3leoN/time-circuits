@@ -70,6 +70,14 @@ export class SettingsPanel {
   }
 
   #labelFullscreen(): void {
-    $('btnFullscreen').querySelector('span')!.textContent = document.fullscreenElement ? t('exitFullscreen') : t('fullscreen');
+    const inFs = !!document.fullscreenElement;
+    $('btnFullscreen').querySelector('span')!.textContent = inFs ? t('exitFullscreen') : t('fullscreen');
+    const nav = document.getElementById('bFullscreen');
+    const tip = inFs ? t('exitFullscreen') : t('tFullscreen');
+    const btn = nav?.querySelector('button');
+    if (btn) { btn.title = tip; btn.setAttribute('aria-label', tip); }
+    // Libellé court dans la barre (le texte long reste dans les réglages).
+    const small = nav?.querySelector('small');
+    if (small) small.textContent = t('bFullscreen');
   }
 }

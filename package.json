@@ -5,9 +5,9 @@
   "description": "Time circuits Retour vers le futur — Web Components LED en TypeScript/SCSS, PWA mobile first.",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite --host --port 5175 --strictPort",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview --host",
+    "preview": "vite preview --host --port 5175 --strictPort",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

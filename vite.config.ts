@@ -3,6 +3,8 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   base: './',
+  server: { host: true, port: 5175, strictPort: true },
+  preview: { host: true, port: 5175, strictPort: true },
   build: { target: 'es2022', assetsInlineLimit: 0 },
   css: { preprocessorOptions: { scss: { api: 'modern-compiler' } } },
   plugins: [
