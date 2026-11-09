@@ -1,0 +1,15 @@
+// Partagé : taille LED et hauteur extérieure d'une case <led-display> (alignement deux-points / AM-PM).
+$size: var(--led-size, 5.829em);
+$lcd-height: calc(#{$size} * 1.217 + 3px);
+
+@mixin ribbon($bg) {
+  font-family: var(--led-font-label, JetBrains, ui-monospace, monospace);
+  letter-spacing: .125em;
+  text-transform: uppercase;
+  line-height: 1.35;
+  white-space: nowrap;
+  color: #fff;
+  background: $bg;
+  border-top: 1px solid rgba(255, 208, 208, .435);
+  box-shadow: 0 0 1px #000000a9;
+}

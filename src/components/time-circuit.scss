@@ -1,0 +1,25 @@
+@use 'lcd' as *;
+
+:host { display: inline-block; line-height: 1; --_gap: calc(#{$size} * .17); }
+:host([hidden]) { display: none; }
+
+.row { display: grid; justify-items: center; gap: calc(#{$size} * .12); }
+.fields { display: grid; grid-auto-flow: column; align-items: end; column-gap: var(--_gap); }
+.footer {
+  @include ribbon(var(--_footer));
+  font-size: calc(#{$size} * .2505);
+  padding: 0 .5em 0 .625em;
+}
+[hidden] { display: none !important; }
+
+// Cadre du module : contour + ombre ; fond = fond principal (transparent) ou granit.
+:host([frame]:not([frame='false'])) .row {
+  padding: var(--tc-frame-padding, calc(#{$size} * .14) calc(#{$size} * .42) calc(#{$size} * .1));
+  background: var(--tc-frame-bg, transparent);
+  border: var(--tc-frame-border, calc(#{$size} * .085) solid #3f4044);
+  border-radius: var(--tc-frame-radius, calc(#{$size} * .03));
+  box-shadow: inset 0 0 calc(#{$size} * .1) rgba(0, 0, 0, .35), 0 calc(#{$size} * .02) calc(#{$size} * .06) rgba(0, 0, 0, .55);
+}
+:host([frame='granite']:not([frame='false'])) .row {
+  background: var(--tc-frame-bg, #d6d7d9 var(--_granite) 0 0 / calc(#{$size} * 2.8));
+}

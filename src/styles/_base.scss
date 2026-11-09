@@ -1,0 +1,54 @@
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.5 var(--f-ui);
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;          // pas de zoom au double tap
+  overscroll-behavior: none;
+  user-select: none;
+}
+button { font: inherit; color: inherit; touch-action: manipulation; }
+[hidden] { display: none !important; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  min-height: 44px; padding: 0 14px;
+  font: 500 14px/1 var(--f-ui); letter-spacing: .02em; color: var(--fg);
+  background: var(--steel); border: 1px solid #3a3e45; border-radius: 8px; cursor: pointer;
+  &:hover { background: #353941; }
+  &:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  svg { width: 18px; height: 18px; }
+}
+
+.seg {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  border: 1px solid var(--line); border-radius: 8px; overflow: hidden;
+  label {
+    position: relative; display: grid; place-items: center; min-height: 44px; padding: 0 8px;
+    text-align: center; cursor: pointer; font: 500 13px/1.2 var(--f-mono); color: var(--muted); background: var(--well);
+    & + label { border-left: 1px solid var(--line); }
+    &:has(input:checked) { background: var(--steel); color: var(--fg); }
+    &:has(input:focus-visible) { outline: 2px solid var(--focus); outline-offset: -2px; }
+  }
+  input { position: absolute; opacity: 0; pointer-events: none; }
+}
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(16px + var(--safe-b)); z-index: 200;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
+  padding: 10px 16px; border-radius: 8px;
+  background: #e7e5e0; color: #111; font: 500 14px/1.3 var(--f-ui); text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+}
+
+@media (max-height: 560px) {
+  .toast { bottom: auto; top: calc(10px + var(--safe-t)); font-size: 13px; padding: 8px 14px; }
+}
+
+kbd { font: 500 11px/1 var(--f-mono); padding: 2px 5px; border: 1px solid #3a3e45; border-bottom-width: 2px; border-radius: 3px; background: var(--well); }

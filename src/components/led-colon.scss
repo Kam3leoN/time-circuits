@@ -1,0 +1,25 @@
+@use 'lcd' as *;
+
+:host { display: inline-block; vertical-align: bottom; line-height: 1; }
+:host([hidden]) { display: none; }
+
+.col {
+  height: $lcd-height;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  gap: calc(#{$size} * .3);
+  padding: 0 calc(#{$size} * .03);
+}
+
+@mixin off { filter: brightness(.28) saturate(.6); box-shadow: inset 0 0 3px 1px #000000e0; }
+
+.dot {
+  width: calc(#{$size} * .13);
+  height: calc(#{$size} * .13);
+  border-radius: 50%;
+  background: var(--_c);
+  box-shadow: 0 0 calc(#{$size} * .11) calc(#{$size} * .02) var(--_c), inset 0 0 2px 2px #00000070;
+}
+:host([data-blink='on']) .dot { animation: tick 1s step-start infinite; }
+:host([data-power='off']) .dot { animation: none; @include off; }
+@keyframes tick { 50% { @include off; } }
+@media (prefers-reduced-motion: reduce) { :host([data-blink='on']) .dot { animation: none; } }

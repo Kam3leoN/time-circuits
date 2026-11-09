@@ -1,0 +1,66 @@
+@use 'tokens' as *;
+
+// Console de commandes : bague métal, puits encastré, touches séparées, étiquette gravée.
+// Actif = touche enfoncée + icône rouge lumineuse (pas de halo autour de la touche).
+.tc-buttons {
+  padding: .5em; border-radius: 99em;
+  background: linear-gradient(180deg, #4a4d53 0%, #26282c 45%, #16171a 100%);
+  box-shadow: 0 1.4em 2.6em rgba(0, 0, 0, .55), 0 .3em .5em rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .22), inset 0 -1px 0 rgba(0, 0, 0, .7);
+
+  ul {
+    list-style: none; margin: 0; padding: .45em; display: flex; gap: .35em; border-radius: 99em; background: #0b0c0e;
+    box-shadow: inset 0 .3em .7em rgba(0, 0, 0, .95), inset 0 -1px 0 rgba(255, 255, 255, .06);
+  }
+  li { display: flex; }
+
+  button {
+    all: unset; box-sizing: border-box; cursor: pointer;
+    width: 9.2em; height: 8em; min-width: 40px; min-height: 36px; // cible tactile minimale sur petits écrans
+    border-radius: 1.3em;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .75em;
+    color: #8b8f96;
+    background: linear-gradient(180deg, #303236 0%, #232528 48%, #1b1c1f 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .11), inset 0 -.2em 0 rgba(0, 0, 0, .45), 0 .3em .5em rgba(0, 0, 0, .7);
+    transition: color .2s, background .2s, box-shadow .15s, transform .08s;
+
+    &:hover { color: #d0d3d8; background: linear-gradient(180deg, #36383d 0%, #27292d 48%, #1d1e21 100%); small { color: #80848b; } }
+    &:active { transform: translateY(.15em); }
+    &:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  }
+  // Extrémités en pilule, coins intérieurs identiques aux autres touches.
+  li:first-child button { border-radius: 4em 1.3em 1.3em 4em; padding-left: .8em; }
+  li:last-child button { border-radius: 1.3em 4em 4em 1.3em; padding-right: .8em; }
+
+  .ic { display: grid; place-items: center; height: 3.2em; > span { display: grid; } }
+  svg { width: 3.1em; height: 3.1em; fill: currentColor; transition: filter .2s; }
+  small {
+    font: 400 1.05em/1 JetBrains, var(--f-mono); letter-spacing: .16em; text-transform: uppercase; color: #5c6066;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, .8), 0 1px 0 rgba(255, 255, 255, .05); transition: color .2s;
+  }
+
+  button:active, li.active button {
+    background: linear-gradient(180deg, #17181b 0%, #1c1d20 100%);
+    box-shadow: inset 0 .35em .7em rgba(0, 0, 0, .85), inset 0 -1px 0 rgba(255, 255, 255, .05), 0 1px 0 rgba(255, 255, 255, .04);
+  }
+  li.active button { transform: translateY(.15em); color: var(--active); }
+  li.active svg { filter: drop-shadow(0 0 1.5px rgba(255, 70, 85, .95)); }
+  li.active small { color: #c9303d; }
+}
+
+// Time circuits éteints : clavier, voyage et reset sont indisponibles.
+.tc:not([data-power='on']) {
+  :is(#bDate, #bTravel, #bReset) {
+    button { cursor: not-allowed; }
+    .ic, small { opacity: .4; }
+  }
+}
+
+// Écran bas : commandes sur 2 colonnes à droite des modules.
+@media #{$short} {
+  .tc-buttons {
+    border-radius: 2.6em;
+    ul { display: grid; grid-template-columns: repeat(2, auto); border-radius: 2.2em; }
+    li:first-child button, li:last-child button, button { border-radius: 1.3em; padding-inline: 0; }
+    li:last-child { grid-column: 1 / -1; justify-self: center; }
+  }
+}

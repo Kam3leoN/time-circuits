@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Time Circuits</title>
+  <meta name="description" content="Les time circuits de la DeLorean : réglez une date et voyagez à 88 mph.">
+  <meta name="theme-color" content="#0b0c0e">
+  <meta name="color-scheme" content="dark">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Time Circuits">
+  <link rel="icon" type="image/png" href="/icons/favicon-64.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="preload" href="/fonts/alarm-clock.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/16segments.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/jetbrains-mono-italic.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+<body>
+  <!-- Smartphone en portrait : on demande de tourner l'écran -->
+  <div class="rotate" role="note"><span data-icon="rotate-phone"></span><p data-i18n="rotate"></p></div>
+
+  <main class="tc" id="tc" data-theme-panel="dark" data-power="off">
+    <div class="tc-core">
+      <div class="tc-stack">
+        <time-circuit id="tcDest" color="red" label-rotate="random" value="1955-11-12T06:39"></time-circuit>
+        <time-circuit id="tcPresent" color="green" label-rotate="random" live></time-circuit>
+        <time-circuit id="tcDeparted" color="amber" label-rotate="random" value="1985-10-26T01:21"></time-circuit>
+      </div>
+      <div class="tc-bottom">
+        <span class="tc-rad" data-icon="radiation"></span>
+        <span class="tc-dmc" data-icon="dmc"></span>
+        <set-to-88 id="tcSpeed" label-rotate="random"></set-to-88>
+      </div>
+    </div>
+    <p class="tc-error" id="tcError" role="alert"></p>
+    <nav class="tc-buttons" data-i18n-aria="navAria">
+      <ul>
+        <li id="bDate"><button type="button" data-i18n-title="tDate"><i class="ic" data-icon="dialpad"></i><small data-i18n="bDate"></small></button></li>
+        <li id="bPower"><button type="button" data-i18n-title="tPower"><i class="ic" data-icon="power-off"></i><small data-i18n="bPower"></small></button></li>
+        <li id="bTravel"><button type="button" data-i18n-title="tTravel"><i class="ic" data-icon="travel"></i><small data-i18n="bTravel"></small></button></li>
+        <li id="bReset"><button type="button" data-i18n-title="tReset"><i class="ic" data-icon="reset"></i><small data-i18n="bReset"></small></button></li>
+        <li id="bMute"><button type="button" data-i18n-title="tMute"><i class="ic"><span class="ic-on" data-icon="volume"></span><span class="ic-off" data-icon="volume-mute" hidden></span></i><small data-i18n="bMute"></small></button></li>
+        <li id="bTheme"><button type="button" data-i18n-title="tTheme"><i class="ic"><span class="ic-sun" data-icon="sun"></span><span class="ic-moon" data-icon="moon" hidden></span></i><small data-i18n="bTheme"></small></button></li>
+        <li id="bOptions"><button type="button" data-i18n-title="tOptions"><i class="ic" data-icon="gear"></i><small data-i18n="bOptions"></small></button></li>
+      </ul>
+    </nav>
+    <div class="tc-flash" id="tcFlash" aria-hidden="true"></div>
+    <canvas class="tc-bolts" id="tcBolts" aria-hidden="true"></canvas>
+  </main>
+
+  <!-- Clavier de saisie -->
+  <div class="overlay" id="kp" hidden>
+    <div class="dialog kp" role="dialog" aria-modal="true" aria-labelledby="kpTitle">
+      <div class="dialog-top"><span id="kpTitle" data-i18n="kpTitle"></span><button type="button" class="close" data-close data-i18n-aria="close">×</button></div>
+      <div class="kp-modes" role="tablist">
+        <button type="button" role="tab" data-mode="destination" style="--m:#c62828"></button>
+        <button type="button" role="tab" data-mode="present" style="--m:#64dd17"></button>
+        <button type="button" role="tab" data-mode="departed" style="--m:#fb8c00"></button>
+      </div>
+      <div class="kp-preview"><time-circuit id="kpPreview" color="red"></time-circuit></div>
+      <div class="kp-mask" id="kpMask" aria-live="polite"></div>
+      <p class="kp-msg" id="kpMsg"></p>
+      <div class="kp-grid">
+        <button type="button" class="key" data-key="1">1</button><button type="button" class="key" data-key="2">2</button><button type="button" class="key" data-key="3">3</button>
+        <button type="button" class="key fn" data-key="backspace" data-i18n-aria="kBack">⌫</button>
+        <button type="button" class="key" data-key="4">4</button><button type="button" class="key" data-key="5">5</button><button type="button" class="key" data-key="6">6</button>
+        <button type="button" class="key fn" data-key="clear" data-i18n="kClear"></button>
+        <button type="button" class="key" data-key="7">7</button><button type="button" class="key" data-key="8">8</button><button type="button" class="key" data-key="9">9</button>
+        <button type="button" class="key fn" data-key="now" data-i18n="now"></button>
+        <button type="button" class="key zero" data-key="0">0</button>
+        <button type="button" class="key enter" data-key="enter" data-i18n="kEnter"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Réglages -->
+  <div class="overlay" id="op" hidden>
+    <div class="dialog op" role="dialog" aria-modal="true" aria-labelledby="opTitle">
+      <div class="dialog-top"><span id="opTitle" data-i18n="opTitle"></span><button type="button" class="close" data-close data-i18n-aria="close">×</button></div>
+      <div class="op-row"><span data-i18n="oLang"></span>
+        <div class="seg" role="radiogroup">
+          <label><input type="radio" name="lang" value="fr">FR · JJ/MMM/AAAA</label>
+          <label><input type="radio" name="lang" value="en">EN · MMM/DD/YYYY</label>
+        </div></div>
+      <div class="op-row"><span data-i18n="oFmt"></span>
+        <div class="seg" role="radiogroup">
+          <label><input type="radio" name="format" value="12">12 h</label>
+          <label><input type="radio" name="format" value="24">24 h</label>
+        </div></div>
+      <div class="op-row"><span data-i18n="oSec"></span>
+        <div class="seg" role="radiogroup">
+          <label><input type="radio" name="seconds" value="off"><span data-i18n="no"></span></label>
+          <label><input type="radio" name="seconds" value="on"><span data-i18n="yes"></span></label>
+        </div></div>
+      <div class="op-row"><span data-i18n="oFrame"></span>
+        <div class="seg" role="radiogroup">
+          <label><input type="radio" name="frame" value="off"><span data-i18n="none"></span></label>
+          <label><input type="radio" name="frame" value="on"><span data-i18n="frame"></span></label>
+          <label><input type="radio" name="frame" value="granite"><span data-i18n="granite"></span></label>
+        </div></div>
+      <div class="op-row"><span data-i18n="oRot"></span>
+        <div class="seg" role="radiogroup">
+          <label><input type="radio" name="rotate" value="0">0°</label>
+          <label><input type="radio" name="rotate" value="random">random</label>
+        </div></div>
+      <div class="op-row"><span data-i18n="oMusic"></span>
+        <div class="seg" role="radiogroup">
+          <label><input type="radio" name="music" value="off"><span data-i18n="no"></span></label>
+          <label><input type="radio" name="music" value="on"><span data-i18n="yes"></span></label>
+        </div></div>
+      <div class="op-row"><span data-i18n="oApp"></span>
+        <div class="op-actions">
+          <button type="button" class="btn" id="btnFullscreen"><i data-icon="fullscreen"></i><span></span></button>
+          <button type="button" class="btn" id="btnInstall" hidden><span data-i18n="install"></span></button>
+        </div></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

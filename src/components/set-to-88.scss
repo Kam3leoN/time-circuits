@@ -1,0 +1,13 @@
+@use 'lcd' as *;
+
+:host { display: inline-block; line-height: 1; }
+:host([hidden]) { display: none; }
+.wrap { display: inline-flex; align-items: flex-end; gap: calc(#{$size} * .16); }
+.tags { display: grid; justify-items: end; gap: calc(#{$size} * .03); margin-bottom: calc(#{$size} * .08); }
+.tag {
+  @include ribbon(#0a0a0a);
+  font-size: calc(#{$size} * .2505);
+  padding: 0 .4em 0 .525em;
+  &:last-child { background: #880000; }
+  &[hidden] { display: none; }
+}
