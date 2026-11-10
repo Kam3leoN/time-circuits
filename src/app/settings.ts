@@ -3,7 +3,17 @@ import { saveSettings, type Settings } from './storage';
 import { t } from './i18n';
 import { $, Modal, toast } from './ui';
 
-interface BeforeInstallPromptEvent extends Event { prompt(): Promise<void>; userChoice: Promise<{ outcome: string }> }
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+  userChoice: Promise<{ outcome: string }>;
+}
+
+/** True si l’app tourne déjà en mode installé (fenêtre PWA). */
+function isInstalledDisplay(): boolean {
+  const modes = ['standalone', 'fullscreen', 'minimal-ui', 'window-controls-overlay'] as const;
+  return modes.some((m) => window.matchMedia(`(display-mode: ${m})`).matches)
+    || ('standalone' in navigator && Boolean((navigator as Navigator & { standalone?: boolean }).standalone));
+}
 
 export class SettingsPanel {
   readonly modal: Modal;
@@ -34,15 +44,22 @@ export class SettingsPanel {
     document.addEventListener('fullscreenchange', () => this.#labelFullscreen());
     if (!document.fullscreenEnabled) $('btnFullscreen').hidden = true;
 
-    // Installation PWA.
-    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); this.#installEvent = e as BeforeInstallPromptEvent; $('btnInstall').hidden = false; });
-    window.addEventListener('appinstalled', () => { $('btnInstall').hidden = true; toast(t('installed')); });
-    $('btnInstall').addEventListener('click', async () => {
-      if (!this.#installEvent) return;
-      await this.#installEvent.prompt();
-      this.#installEvent = null;
-      $('btnInstall').hidden = true;
+    // Installation PWA — preventDefault garde l’événement pour notre bouton (sinon barre native Chrome seulement).
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      this.#installEvent = e as BeforeInstallPromptEvent;
+      this.#refreshInstallUi();
     });
+    window.addEventListener('appinstalled', () => {
+      this.#installEvent = null;
+      this.#refreshInstallUi();
+      toast(t('installedPin'));
+    });
+    $('btnInstall').addEventListener('click', () => void this.#promptInstall());
+    const dockInstall = document.getElementById('bInstall');
+    dockInstall?.querySelector('button')?.addEventListener('click', () => void this.#promptInstall());
+
+    this.#refreshInstallUi();
   }
 
   /** Coche les boutons radio selon les réglages courants. */
@@ -56,6 +73,7 @@ export class SettingsPanel {
       if (input) input.checked = true;
     }
     this.#labelFullscreen();
+    this.#refreshInstallUi();
   }
 
   async toggleFullscreen(): Promise<void> {
@@ -79,5 +97,49 @@ export class SettingsPanel {
     // Libellé court dans la barre (le texte long reste dans les réglages).
     const small = nav?.querySelector('small');
     if (small) small.textContent = t('bFullscreen');
+  }
+
+  async #promptInstall(): Promise<void> {
+    if (!this.#installEvent) {
+      toast(t('installManual'), 5200);
+      return;
+    }
+    try {
+      await this.#installEvent.prompt();
+      await this.#installEvent.userChoice;
+    } catch { /* annulé */ }
+    this.#installEvent = null;
+    this.#refreshInstallUi();
+  }
+
+  #refreshInstallUi(): void {
+    const installed = isInstalledDisplay();
+    const canPrompt = !!this.#installEvent;
+    const btn = $('btnInstall');
+    const tip = document.getElementById('installTip');
+    const dock = document.getElementById('bInstall');
+
+    if (installed) {
+      btn.hidden = true;
+      if (tip) { tip.hidden = true; tip.textContent = ''; }
+      if (dock) dock.hidden = true;
+      return;
+    }
+
+    // Bouton réglages toujours visible hors mode installé (prompt natif ou aide manuelle).
+    btn.hidden = false;
+    btn.querySelector('span')!.textContent = t('install');
+    if (tip) {
+      tip.hidden = false;
+      tip.textContent = canPrompt ? t('installReady') : t('installManual');
+    }
+    if (dock) {
+      dock.hidden = !canPrompt;
+      const dockBtn = dock.querySelector('button');
+      const label = t('tInstall');
+      if (dockBtn) { dockBtn.title = label; dockBtn.setAttribute('aria-label', label); }
+      const small = dock.querySelector('small');
+      if (small) small.textContent = t('bInstall');
+    }
   }
 }

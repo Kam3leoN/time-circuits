@@ -12,10 +12,11 @@ import radiation from '../assets/icons/radiation.svg?raw';
 import dmc from '../assets/icons/dmc.svg?raw';
 import rotatePhone from '../assets/icons/rotate-phone.svg?raw';
 import fullscreen from '../assets/icons/fullscreen.svg?raw';
+import install from '../assets/icons/install.svg?raw';
 
 const ICONS: Record<string, string> = {
   dialpad, 'power-off': powerOff, travel, reset, volume, 'volume-mute': volumeMute, sun, moon, gear, radiation, dmc,
-  'rotate-phone': rotatePhone, fullscreen,
+  'rotate-phone': rotatePhone, fullscreen, install,
 };
 
 export function injectIcons(root: ParentNode = document): void {

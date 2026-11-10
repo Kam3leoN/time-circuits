@@ -2,7 +2,8 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  base: './',
+  // Racine absolue : installabilité Chromium + SW plus fiables sur Vercel (évite start_url relatif).
+  base: '/',
   server: { host: true, port: 5175, strictPort: true },
   preview: { host: true, port: 5175, strictPort: true },
   build: { target: 'es2022', assetsInlineLimit: 0 },
@@ -11,23 +12,27 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.png', 'fonts/*.woff2', 'assets/bg/*.webp', 'assets/ui/*.png', 'audios/*.mp3'],
+      // En dev : SW actif pour tester l’install locale (localhost:5175).
+      devOptions: { enabled: true, type: 'module' },
       manifest: {
+        id: '/',
         name: 'Time Circuits',
         short_name: 'Time Circuits',
         description: 'Les time circuits de la DeLorean : réglez une date et voyagez à 88 mph.',
         lang: 'fr',
-        start_url: './',
-        scope: './',
-        display: 'fullscreen',
-        display_override: ['fullscreen', 'standalone'],
+        start_url: '/',
+        scope: '/',
+        // standalone = fenêtre app Windows (épinglable barre des tâches) ; fullscreen via override.
+        display: 'standalone',
+        display_override: ['standalone', 'fullscreen', 'minimal-ui'],
         orientation: 'landscape',
         background_color: '#0b0c0e',
         theme_color: '#0b0c0e',
         categories: ['entertainment', 'utilities'],
         icons: [
-          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: 'icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {

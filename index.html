@@ -7,6 +7,7 @@
   <meta name="description" content="Les time circuits de la DeLorean : réglez une date et voyagez à 88 mph.">
   <meta name="theme-color" content="#0b0c0e">
   <meta name="color-scheme" content="dark">
+  <meta name="application-name" content="Time Circuits">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -48,6 +49,7 @@
       <li id="bMute"><button type="button" data-i18n-title="tMute"><i class="ic"><span class="ic-on" data-icon="volume"></span><span class="ic-off" data-icon="volume-mute" hidden></span></i><small data-i18n="bMute"></small></button></li>
       <li id="bTheme"><button type="button" data-i18n-title="tTheme"><i class="ic"><span class="ic-sun" data-icon="sun"></span><span class="ic-moon" data-icon="moon" hidden></span></i><small data-i18n="bTheme"></small></button></li>
       <li id="bFullscreen"><button type="button" data-i18n-title="tFullscreen"><i class="ic" data-icon="fullscreen"></i><small data-i18n="bFullscreen"></small></button></li>
+      <li id="bInstall" hidden><button type="button" data-i18n-title="tInstall"><i class="ic" data-icon="install"></i><small data-i18n="bInstall"></small></button></li>
       <li id="bOptions"><button type="button" data-i18n-title="tOptions"><i class="ic" data-icon="gear"></i><small data-i18n="bOptions"></small></button></li>
     </ul>
   </nav>
@@ -118,8 +120,10 @@
       <div class="op-row"><span data-i18n="oApp"></span>
         <div class="op-actions">
           <button type="button" class="btn" id="btnFullscreen"><i data-icon="fullscreen"></i><span></span></button>
-          <button type="button" class="btn" id="btnInstall" hidden><span data-i18n="install"></span></button>
-        </div></div>
+          <button type="button" class="btn" id="btnInstall"><i data-icon="install"></i><span data-i18n="install"></span></button>
+        </div>
+        <p class="op-tip" id="installTip"></p>
+      </div>
     </div>
   </div>
 

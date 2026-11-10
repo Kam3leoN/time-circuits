@@ -97,6 +97,12 @@
   > span { font: 500 12px/1 var(--f-mono); letter-spacing: .06em; color: var(--fg); }
 }
 .op-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.op-tip {
+  margin: 0;
+  font: 400 11px/1.35 var(--f-mono);
+  letter-spacing: .02em;
+  color: color-mix(in srgb, var(--fg) 72%, transparent);
+}
 @media #{$short} {
   .op { width: min(760px, 100%); grid-template-columns: 1fr 1fr; gap: 10px 16px; > .dialog-top { grid-column: 1 / -1; } }
   .op-row { padding-bottom: 8px; border-bottom: 0; }

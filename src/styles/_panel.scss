@@ -49,6 +49,7 @@ body {
 .tc-bottom { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
 .tc-rad { justify-self: start; padding-left: 1.5em; color: #fc0; display: flex; svg { width: 6.4em; height: 6.4em; } }
 .tc-dmc {
+  justify-self: center;
   color: var(--panel-ink); display: flex; transition: color .3s;
   svg { height: 1.9em; width: auto; }
   .tc[data-theme-panel='dark'] & { filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .8)); }
@@ -56,12 +57,13 @@ body {
 }
 .tc-bottom set-to-88 { justify-self: end; }
 
+// Messages ponctuels (saisie / erreurs) — pas de bandeau status permanent.
 .tc-error {
-  // Superposé en bas du panneau : ne prend pas de hauteur aux modules.
-  position: absolute; left: 0; right: 0; bottom: .35em; text-align: center; pointer-events: none;
-  margin: 0;
-  font: 1.9em/1 AlarmClock, var(--f-mono); letter-spacing: .12em;
+  position: absolute; left: 0; right: 0; bottom: .35em; z-index: 4;
+  margin: 0; min-height: 1.2em; text-align: center; pointer-events: none;
+  font: 1.5em/1 AlarmClock, var(--f-mono); letter-spacing: .12em;
   color: #ff3b30; text-shadow: 0 0 .5em #f80707;
+  &:empty { visibility: hidden; }
 }
 
 // Voyage temporel : écran noir + éclairs (assets/fx/lightning.gif), comme le projet d'origine.
@@ -107,6 +109,6 @@ body {
   .tc-core, .tc-bottom { display: contents; }
   .tc-stack { grid-area: stack; }
   .tc-rad, .tc-dmc { display: none; }
-  .tc-error { font-size: 1.5em; bottom: .2em; }
+  .tc-error { font-size: 1.25em; bottom: .25em; }
   .tc-bottom set-to-88 { grid-area: speed; align-self: center; justify-self: center; }
 }
