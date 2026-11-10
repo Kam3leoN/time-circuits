@@ -2,12 +2,12 @@
 import type { SetTo88, TimeCircuit } from '../components';
 import { AudioManager, haptic } from './audio';
 import { readDigits } from './digits';
-import { applyStatic, dict, setLang, t, tErr } from './i18n';
+import { applyStatic, dict, setLang, t } from './i18n';
 import { Keypad, type Mode } from './keypad';
 import { preloadWarp, warp } from './warp';
 import { SettingsPanel } from './settings';
 import { loadSettings, saveSettings, type Settings } from './storage';
-import { $, hideToast, toast } from './ui';
+import { $, toast } from './ui';
 
 const DEFAULTS = {
   destination: { month: 11, day: '12', year: '1955', hour: '06', minute: '39', second: '00', isAM: true },
@@ -57,7 +57,6 @@ export class App {
     this.audio.musicEnabled = this.s.music;
     this.applyAll();
     this.settings.sync();
-    window.setTimeout(() => { if (!this.power) toast(t('hello'), 3200); }, 900);
   }
 
   /* ----- réglages ----- */
@@ -104,13 +103,9 @@ export class App {
   }
   setActive(id: string, on: boolean): void { $(id).classList.toggle('active', on); }
 
-  showError(code = ''): void { $('tcError').textContent = code ? tErr(code) : ''; }
-
   requirePower(): boolean {
     if (this.power) return true;
-    this.showError('* POWER * OFF');
     this.audio.play('error');
-    toast(t('needPower'));
     $('bPower').animate?.([{ transform: 'translateX(0)' }, { transform: 'translateX(-3px)' }, { transform: 'translateX(3px)' }, { transform: 'translateX(0)' }], { duration: 220 });
     return false;
   }
@@ -123,13 +118,12 @@ export class App {
     this.setActive('bPower', on);
     this.panel.dataset.power = on ? 'on' : 'off';
     document.body.dataset.power = this.panel.dataset.power;
-    if (on) hideToast();
     if (!on) {
       this.buffer = '';
       this.speed.cancel();
       this.audio.stopMusic();
       if (this.keypad.isOpen) this.keypad.modal.close();
-    } else this.showError();
+    }
   }
 
   openKeypad(): void {
@@ -141,10 +135,9 @@ export class App {
   applyDigits(mode: Mode, digits: string): boolean {
     const c = { destination: this.dest, present: this.present, departed: this.departed }[mode];
     const { patch, error } = readDigits(digits, c, mode === 'destination');
-    if (error || !digits) { this.showError(error ?? '* EMPTY * INPUT'); this.audio.play('error'); return false; }
+    if (error || !digits) { this.audio.play('error'); return false; }
     if (mode === 'present') c.live = false; // sinon l'horloge écraserait la saisie
     c.update(patch);
-    this.showError();
     this.audio.play('success');
     return true;
   }
@@ -152,10 +145,9 @@ export class App {
   async travel(): Promise<void> {
     if (this.travelling || !this.requirePower()) return;
     const d = this.dest.getDateTime();
-    if (![d.month, d.day, d.year, d.hour, d.minute].every((v) => v.trim())) { this.showError('* SET * DESTINATION'); this.audio.play('error'); return; }
+    if (![d.month, d.day, d.year, d.hour, d.minute].every((v) => v.trim())) { this.audio.play('error'); return; }
     this.travelling = true;
     this.setActive('bTravel', true);
-    this.showError();
     this.departed.update(this.present.getDateTime());
     this.present.live = false;
     this.audio.play('success');
@@ -184,7 +176,6 @@ export class App {
     else { this.resetCount = 0; this.dest.update(DEFAULTS.destination); this.departed.update(DEFAULTS.departed); }
     this.speed.reset();
     this.present.live = true;
-    this.showError();
     this.setActive('bReset', true);
     setTimeout(() => this.setActive('bReset', false), 300);
   }
@@ -219,10 +210,10 @@ export class App {
     const k = e.key;
     if (k >= '0' && k <= '9') {
       if (!this.power) return;
-      if (this.buffer.length < 12) { this.buffer += k; this.audio.dial(k); this.showError(this.buffer.replace(/(\d{2})(?=\d)/g, '$1 ')); }
+      if (this.buffer.length < 12) { this.buffer += k; this.audio.dial(k); }
       else this.audio.play('error');
     } else if (k === 'Enter' && this.buffer) { e.preventDefault(); this.applyDigits('destination', this.buffer); this.buffer = ''; }
-    else if (k === 'Backspace' && this.buffer) { this.buffer = this.buffer.slice(0, -1); this.showError(this.buffer); this.audio.dial(1); }
+    else if (k === 'Backspace' && this.buffer) { this.buffer = this.buffer.slice(0, -1); this.audio.dial(1); }
     else {
       const map: Record<string, () => void> = {
         x: () => void this.travel(), d: () => this.openKeypad(), p: () => this.setPower(!this.power), r: () => this.reset(),
