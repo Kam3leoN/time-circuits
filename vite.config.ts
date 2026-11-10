@@ -10,7 +10,7 @@ export default defineConfig({
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/*.png', 'fonts/*.woff2', 'bg/*.webp', 'audios/*.mp3'],
+      includeAssets: ['icons/*.png', 'fonts/*.woff2', 'assets/bg/*.webp', 'assets/ui/*.png', 'audios/*.mp3'],
       manifest: {
         name: 'Time Circuits',
         short_name: 'Time Circuits',
@@ -31,9 +31,22 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,woff2,webp,png,svg,mp3}'],
-        // La musique du film (≈3,3 Mo) est mise en cache pour fonctionner hors ligne.
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        // Pré-cache : l'app, les polices, les fonds WebP, la bande des boutons, les bruitages.
+        globPatterns: ['**/*.{js,css,html,woff2,webp,svg}', 'icons/*.png', 'assets/ui/*.png', 'audios/*.mp3'],
+        globIgnores: ['audios/bttf.mp3'],
+        // Gros fichiers (musique 3,3 Mo, éclairs 6,4 Mo, fonds PNG) : mis en cache au premier usage, puis hors ligne.
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => /\/(assets\/(fx|bg)\/|audios\/bttf\.mp3)/.test(url.pathname),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'time-circuits-media',
+              expiration: { maxEntries: 20 },
+              cacheableResponse: { statuses: [0, 200] },
+              rangeRequests: true,
+            },
+          },
+        ],
       },
     }),
   ],

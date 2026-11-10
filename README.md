@@ -63,3 +63,13 @@ Les polices `AlarmClock`, `16Segments` et `JetBrains` sont déclarées dans `src
 
 Les sons et la musique (`public/audios`) viennent du projet d'origine ; `bttf.mp3` est la musique du film.
 Vérifiez les droits avant une mise en ligne publique. La police 16Segments est « free for personal use ».
+
+## Assets (`public/assets/`)
+
+Servis tels quels par Vite et Vercel à l'adresse `/assets/...` :
+
+- `assets/bg/tricot-dark.png|webp`, `tricot-light.png|webp` : fonds sombre / clair (WebP en priorité, PNG en secours).
+- `assets/fx/lightning.gif` : éclairs du voyage temporel, sur fond noir plein écran.
+- `assets/ui/bg-btn.png` : bande métal de la barre de commandes (répétée en largeur) ; `bg-btn-vertical.png` pour la barre verticale du smartphone en paysage.
+
+Les gros fichiers (éclairs, musique, fonds PNG) sont mis en cache au premier usage par le service worker, puis disponibles hors ligne.

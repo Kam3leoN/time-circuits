@@ -8,6 +8,17 @@
   @include ribbon(#0a0a0a);
   font-size: calc(#{$size} * .2505);
   padding: 0 .4em 0 .525em;
+  // Cible (88 / 142) en rouge — last-child pour layout side à 3 rubans.
   &:last-child { background: #880000; }
   &[hidden] { display: none; }
+}
+
+// layout="top" : deux rubans empilés (« SET TO » / « 88 MPH » ou « RÉGLER À » / « 142 KM/H ») au-dessus de l'afficheur.
+:host([layout='top']) {
+  .wrap { flex-direction: column; align-items: center; gap: calc(#{$size} * .1); }
+  .tags {
+    display: grid; justify-items: center; gap: calc(#{$size} * .06); margin: 0;
+  }
+  // 2ᵉ ruban = « 88 MPH » / « 142 KM/H » (le 3ᵉ span est vide/hidden → last-child ne suffit pas).
+  .tag:nth-child(2) { background: #880000; }
 }

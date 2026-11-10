@@ -1,6 +1,6 @@
 /**
  * <set-to-88> — compteur « SET / TO / 88 ».
- * Attributs : value (0–999) · target (88 ; 142 pour les km/h → 3 cases) · color (amber) · unit (ruban au-dessus)
+ * Attributs : layout side|top (side : rubans à gauche ; top : rubans en ligne au-dessus) · value (0–999) · target (88 ; 142 pour les km/h → 3 cases) · color (amber) · unit (ruban au-dessus)
  *   · unit-color (red) · labels ("SET,TO,88") · ghost · italic · label-rotate · power
  * API : await run({ target, duration, step, hold }) · reset() · cancel() · speed. Événements : speed-change, target-reached.
  */
@@ -73,17 +73,22 @@ export class SetTo88 extends HTMLElement {
   }
 
   #render(): void {
+    const top = this.getAttribute('layout') === 'top';
+    // layout=top : l'unité est déjà dans le 2ᵉ ruban (« 88 MPH ») → pas de ruban sur le LCD.
+    const unit = top ? '' : (this.getAttribute('unit') ?? '');
     const attrs: Record<string, string> = {
-      label: this.getAttribute('unit') ?? '', 'label-color': this.getAttribute('unit-color') || 'red',
+      label: unit, 'label-color': this.getAttribute('unit-color') || 'red',
       color: this.getAttribute('color') || 'amber', digit: String(this.digits),
       value: String(this.speed).padStart(this.digits, '0'), power: this.power ? 'on' : 'off',
     };
     for (const a of ['ghost', 'italic', 'label-rotate']) { const v = this.getAttribute(a); if (v !== null) attrs[a] = v; }
     setAttrs(this.#led, attrs);
-    const parts = (this.getAttribute('labels') || `SET,TO,${this.target}`).split(',').map((t) => t.trim());
+    const fallback = top ? `SET TO,${this.target} MPH` : `SET,TO,${this.target}`;
+    const parts = (this.getAttribute('labels') || fallback).split(',').map((t) => t.trim());
     this.#tags.forEach((t, i) => { t.textContent = parts[i] ?? ''; t.hidden = !parts[i]; });
     this.setAttribute('role', 'img');
-    this.setAttribute('aria-label', `${parts.join(' ')} : ${this.speed} ${this.getAttribute('unit') ?? ''}`.trim());
+    const unitAria = this.getAttribute('unit') ?? '';
+    this.setAttribute('aria-label', `${parts.join(' ')} : ${this.speed} ${unitAria}`.trim());
   }
 }
 

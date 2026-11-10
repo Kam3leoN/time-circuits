@@ -1,70 +1,99 @@
 @use 'tokens' as *;
 
-// Console de commandes : bague métal, puits encastré, touches séparées, étiquette gravée.
-// Actif = touche enfoncée + icône rouge lumineuse (pas de halo autour de la touche).
-.tc-buttons {
-  padding: .5em; border-radius: 99em;
-  background: linear-gradient(180deg, #4a4d53 0%, #26282c 45%, #16171a 100%);
-  box-shadow: 0 1.4em 2.6em rgba(0, 0, 0, .55), 0 .3em .5em rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .22), inset 0 -1px 0 rgba(0, 0, 0, .7);
+// Barre de commandes : bande métal perforée (assets/ui/bg-btn.png) répétée sur toute la largeur,
+// collée en bas de l'écran. Les touches sont centrées et défilent à l'horizontale si elles débordent.
+// Smartphone en paysage : même barre, collée à gauche, verticale (bg-btn-vertical.png), défilement vertical.
+.dock {
+  grid-area: dock;
+  position: sticky; bottom: 0; z-index: 20;
+  width: 100vw;
+  height: calc(var(--dock-h) + var(--safe-b));
+  // Padding vertical égal (9+86+9 = 104) : touches centrées dans la bande pointillée.
+  padding: 9px max(12px, var(--safe-r)) calc(9px + var(--safe-b)) max(12px, var(--safe-l));
+  background: #313336 url('/assets/ui/bg-btn.png') repeat-x left top;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, .55);
 
   ul {
-    list-style: none; margin: 0; padding: .45em; display: flex; gap: .35em; border-radius: 99em; background: #0b0c0e;
-    box-shadow: inset 0 .3em .7em rgba(0, 0, 0, .95), inset 0 -1px 0 rgba(255, 255, 255, .06);
+    list-style: none; margin: 0; padding: 0 4px;
+    height: 100%;
+    display: flex; align-items: center; gap: 8px;
+    overflow-x: auto; overflow-y: hidden;
+    overscroll-behavior: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    &::-webkit-scrollbar { display: none; }
   }
-  li { display: flex; }
+  // Centrage qui laisse défiler jusqu'au bout quand ça déborde (≠ justify-content: center).
+  li { display: flex; flex: none; scroll-snap-align: center; }
+  li:first-child { margin-left: auto; }
+  li:last-child { margin-right: auto; }
 
   button {
     all: unset; box-sizing: border-box; cursor: pointer;
-    width: 9.2em; height: 8em; min-width: 40px; min-height: 36px; // cible tactile minimale sur petits écrans
-    border-radius: 1.3em;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .75em;
+    width: 92px; height: 86px; border-radius: 16px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px;
     color: #8b8f96;
     background: linear-gradient(180deg, #303236 0%, #232528 48%, #1b1c1f 100%);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .11), inset 0 -.2em 0 rgba(0, 0, 0, .45), 0 .3em .5em rgba(0, 0, 0, .7);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .11), inset 0 -2px 0 rgba(0, 0, 0, .45), 0 3px 6px rgba(0, 0, 0, .7);
     transition: color .2s, background .2s, box-shadow .15s, transform .08s;
 
     &:hover { color: #d0d3d8; background: linear-gradient(180deg, #36383d 0%, #27292d 48%, #1d1e21 100%); small { color: #80848b; } }
-    &:active { transform: translateY(.15em); }
+    &:active { transform: translateY(2px); }
     &:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   }
-  // Extrémités en pilule, coins intérieurs identiques aux autres touches.
-  li:first-child button { border-radius: 4em 1.3em 1.3em 4em; padding-left: .8em; }
-  li:last-child button { border-radius: 1.3em 4em 4em 1.3em; padding-right: .8em; }
 
-  .ic { display: grid; place-items: center; height: 3.2em; > span { display: grid; } }
-  svg { width: 3.1em; height: 3.1em; fill: currentColor; transition: filter .2s; }
+  .ic { display: grid; place-items: center; height: 36px; > span { display: grid; } }
+  svg { width: 34px; height: 34px; fill: currentColor; transition: filter .2s; }
   small {
-    font: 400 1.05em/1 JetBrains, var(--f-mono); letter-spacing: .16em; text-transform: uppercase; color: #5c6066;
+    font: 400 11px/1 JetBrains, var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: #5c6066;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, .8), 0 1px 0 rgba(255, 255, 255, .05); transition: color .2s;
+    white-space: nowrap;
   }
 
+  // Actif : touche enfoncée, icône rouge lumineuse (pas de halo autour de la touche).
   button:active, li.active button {
     background: linear-gradient(180deg, #17181b 0%, #1c1d20 100%);
-    box-shadow: inset 0 .35em .7em rgba(0, 0, 0, .85), inset 0 -1px 0 rgba(255, 255, 255, .05), 0 1px 0 rgba(255, 255, 255, .04);
+    box-shadow: inset 0 3px 7px rgba(0, 0, 0, .85), inset 0 -1px 0 rgba(255, 255, 255, .05), 0 1px 0 rgba(255, 255, 255, .04);
   }
-  li.active button { transform: translateY(.15em); color: var(--active); }
+  li.active button { transform: translateY(2px); color: var(--active); }
   li.active svg { filter: drop-shadow(0 0 1.5px rgba(255, 70, 85, .95)); }
   li.active small { color: #c9303d; }
 }
 
 // Time circuits éteints : clavier, voyage et reset sont indisponibles.
-.tc:not([data-power='on']) {
-  :is(#bDate, #bTravel, #bReset) {
-    button { cursor: not-allowed; }
-    .ic, small { opacity: .4; }
-  }
+body:not([data-power='on']) .dock :is(#bDate, #bTravel, #bReset) {
+  button { cursor: not-allowed; }
+  .ic, small { opacity: .4; }
 }
 
-// Écran bas : commandes sur 2 colonnes à gauche des modules.
+// Smartphone en paysage : barre verticale collée à gauche. La hauteur des touches s'adapte pour que
+// toutes tiennent sans être coupées ; s'il en reste trop, la colonne défile à la verticale.
 @media #{$short} {
-  .tc-buttons {
-    border-radius: 2.6em;
-    ul { display: grid; grid-template-columns: repeat(2, auto); border-radius: 2.2em; }
-    li:first-child button, li:last-child button, button { border-radius: 1.3em; padding-inline: 0; }
-    // Nombre impair (ex. plein écran masqué) : dernière touche sur toute la largeur.
-    ul:has(> li:last-child:nth-child(odd)) > li:last-child {
-      grid-column: 1 / -1;
-      button { width: 100%; }
+  .dock {
+    --key-h: clamp(30px, calc((100svh - max(6px, var(--safe-t)) - max(6px, var(--safe-b)) - 4px - 7 * 4px) / 8), 60px);
+    position: sticky; left: 0; top: 0; bottom: auto;
+    width: calc(var(--dock-w) + var(--safe-l));
+    height: 100svh;
+    padding: max(6px, var(--safe-t)) 10px max(6px, var(--safe-b)) calc(4px + var(--safe-l)); // 10 px : liseré sombre à droite
+    background: #313336 url('/assets/ui/bg-btn-vertical.png') repeat-y right top;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, .55);
+
+    ul {
+      flex-direction: column; align-items: center; gap: 4px;
+      padding: 2px 0;
+      overflow-x: hidden; overflow-y: auto;
+      scroll-snap-type: y proximity;
     }
+    li:first-child { margin: auto 0 0; }
+    li:last-child { margin: 0 0 auto; }
+    button { width: 58px; height: var(--key-h); border-radius: 12px; gap: 3px; }
+    .ic { height: 22px; }
+    svg { width: 20px; height: 20px; }
+    small { font-size: 8px; letter-spacing: .08em; }
   }
+}
+// Très peu de hauteur : icônes seules.
+@media (max-height: 400px) {
+  .dock small { display: none; }
 }

@@ -4,7 +4,7 @@ import { AudioManager, haptic } from './audio';
 import { readDigits } from './digits';
 import { applyStatic, dict, setLang, t, tErr } from './i18n';
 import { Keypad, type Mode } from './keypad';
-import { lightning } from './lightning';
+import { preloadWarp, warp } from './warp';
 import { SettingsPanel } from './settings';
 import { loadSettings, saveSettings, type Settings } from './storage';
 import { $, hideToast, toast } from './ui';
@@ -36,6 +36,7 @@ export class App {
     this.keypad = new Keypad(circuits, this.audio, (m, d) => this.applyDigits(m, d), () => this.setActive('bDate', false));
     this.settings = new SettingsPanel(this.s, (k) => this.onSetting(k), () => this.setActive('bOptions', false));
 
+    preloadWarp();
     this.dest.update(DEFAULTS.destination);
     this.departed.update(DEFAULTS.departed);
     this.present.live = true;
@@ -121,6 +122,7 @@ export class App {
     this.dest.power = this.departed.power = this.speed.power = on;
     this.setActive('bPower', on);
     this.panel.dataset.power = on ? 'on' : 'off';
+    document.body.dataset.power = this.panel.dataset.power;
     if (on) hideToast();
     if (!on) {
       this.buffer = '';
@@ -163,11 +165,11 @@ export class App {
     if (ok) {
       this.audio.play('zap');
       haptic(120);
-      const flash = $('tcFlash');
-      flash.classList.remove('on'); void flash.offsetWidth; flash.classList.add('on');
-      void lightning($<HTMLCanvasElement>('tcBolts'));
-      await new Promise((r) => setTimeout(r, 700));
+      // Écran noir + éclairs ; la nouvelle date s'affiche pendant l'effet, prête au retour.
+      const w = warp(2000);
+      await new Promise((r) => setTimeout(r, 900));
       this.present.update(this.dest.getDateTime());
+      await w;
       const a = this.present.getDateTime();
       toast(dict().arrived(this.s.lang === 'fr' ? `${a.day} ${a.month} ${a.year}` : `${a.month} ${a.day} ${a.year}`));
     }

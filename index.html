@@ -16,8 +16,9 @@
   <link rel="preload" href="/fonts/alarm-clock.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/16segments.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/jetbrains-mono-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/bg/tricot-dark.webp" as="image" type="image/webp">
 </head>
-<body>
+<body data-power="off">
   <!-- Smartphone en portrait : on demande de tourner l'écran -->
   <div class="rotate" role="note"><span data-icon="rotate-phone"></span><p data-i18n="rotate"></p></div>
 
@@ -31,25 +32,28 @@
       <div class="tc-bottom">
         <span class="tc-rad" data-icon="radiation"></span>
         <span class="tc-dmc" data-icon="dmc"></span>
-        <set-to-88 id="tcSpeed" label-rotate="random"></set-to-88>
+        <set-to-88 id="tcSpeed" layout="top" label-rotate="random"></set-to-88>
       </div>
     </div>
     <p class="tc-error" id="tcError" role="alert"></p>
-    <nav class="tc-buttons" data-i18n-aria="navAria">
-      <ul>
-        <li id="bDate"><button type="button" data-i18n-title="tDate"><i class="ic" data-icon="dialpad"></i><small data-i18n="bDate"></small></button></li>
-        <li id="bPower"><button type="button" data-i18n-title="tPower"><i class="ic" data-icon="power-off"></i><small data-i18n="bPower"></small></button></li>
-        <li id="bTravel"><button type="button" data-i18n-title="tTravel"><i class="ic" data-icon="travel"></i><small data-i18n="bTravel"></small></button></li>
-        <li id="bReset"><button type="button" data-i18n-title="tReset"><i class="ic" data-icon="reset"></i><small data-i18n="bReset"></small></button></li>
-        <li id="bMute"><button type="button" data-i18n-title="tMute"><i class="ic"><span class="ic-on" data-icon="volume"></span><span class="ic-off" data-icon="volume-mute" hidden></span></i><small data-i18n="bMute"></small></button></li>
-        <li id="bTheme"><button type="button" data-i18n-title="tTheme"><i class="ic"><span class="ic-sun" data-icon="sun"></span><span class="ic-moon" data-icon="moon" hidden></span></i><small data-i18n="bTheme"></small></button></li>
-        <li id="bFullscreen"><button type="button" data-i18n-title="tFullscreen"><i class="ic" data-icon="fullscreen"></i><small data-i18n="bFullscreen"></small></button></li>
-        <li id="bOptions"><button type="button" data-i18n-title="tOptions"><i class="ic" data-icon="gear"></i><small data-i18n="bOptions"></small></button></li>
-      </ul>
-    </nav>
-    <div class="tc-flash" id="tcFlash" aria-hidden="true"></div>
-    <canvas class="tc-bolts" id="tcBolts" aria-hidden="true"></canvas>
   </main>
+
+  <!-- Barre de commandes : collée en bas (paysage mobile : à gauche), défile si elle déborde -->
+  <nav class="dock" id="dock" data-i18n-aria="navAria">
+    <ul>
+      <li id="bPower"><button type="button" data-i18n-title="tPower"><i class="ic" data-icon="power-off"></i><small data-i18n="bPower"></small></button></li>
+      <li id="bDate"><button type="button" data-i18n-title="tDate"><i class="ic" data-icon="dialpad"></i><small data-i18n="bDate"></small></button></li>
+      <li id="bTravel"><button type="button" data-i18n-title="tTravel"><i class="ic" data-icon="travel"></i><small data-i18n="bTravel"></small></button></li>
+      <li id="bReset"><button type="button" data-i18n-title="tReset"><i class="ic" data-icon="reset"></i><small data-i18n="bReset"></small></button></li>
+      <li id="bMute"><button type="button" data-i18n-title="tMute"><i class="ic"><span class="ic-on" data-icon="volume"></span><span class="ic-off" data-icon="volume-mute" hidden></span></i><small data-i18n="bMute"></small></button></li>
+      <li id="bTheme"><button type="button" data-i18n-title="tTheme"><i class="ic"><span class="ic-sun" data-icon="sun"></span><span class="ic-moon" data-icon="moon" hidden></span></i><small data-i18n="bTheme"></small></button></li>
+      <li id="bFullscreen"><button type="button" data-i18n-title="tFullscreen"><i class="ic" data-icon="fullscreen"></i><small data-i18n="bFullscreen"></small></button></li>
+      <li id="bOptions"><button type="button" data-i18n-title="tOptions"><i class="ic" data-icon="gear"></i><small data-i18n="bOptions"></small></button></li>
+    </ul>
+  </nav>
+
+  <!-- Voyage temporel : fond noir + éclairs (assets/fx/lightning.gif) -->
+  <div class="warp" id="warp" aria-hidden="true" hidden><img id="warpGif" alt=""></div>
 
   <!-- Clavier de saisie -->
   <div class="overlay" id="kp" hidden>
