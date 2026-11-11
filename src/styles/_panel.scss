@@ -14,12 +14,12 @@ body {
 }
 
 // Taille du panneau (em) : suit à la fois la largeur et la hauteur disponibles.
-// Instruments flottants hors flux → les 3 modules sont recentrés verticalement.
+// --tc-hem garde le budget d’avant les floats (≈59.5+14) pour ne pas grossir les LED.
 .tc {
   grid-area: panel;
   --w-ampm: 0; --w-sec: 0; --w-frame: 0; --h-frame: 0;
   --tc-wem: calc(72 + var(--w-ampm) + var(--w-sec) + var(--w-frame));
-  --tc-hem: calc(52 + var(--h-frame));
+  --tc-hem: calc(73.5 + var(--h-frame));
   --avail-w: calc(100vw - var(--dock-w) - var(--safe-l) - var(--safe-r) - 20px);
   --avail-h: calc(100svh - var(--dock-h) - var(--safe-b) - var(--safe-t) - 16px);
   --panel-ink: #c8c8c8;
