@@ -1,0 +1,22 @@
+:host {
+  display: block;
+  width: 100%;
+  line-height: 0;
+}
+
+svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.45));
+}
+
+.glow { opacity: 0; transition: opacity 0.5s; }
+.lit .glow { opacity: 1; }
+
+.lampOn { opacity: 0; }
+.lampOn.on { opacity: 1; }
+
+[data-reset] { cursor: pointer; outline: none; }
+[data-reset]:focus-visible { outline: 2px solid #f2b632; outline-offset: 2px; }
+[data-reset]:active [data-cap] { transform: translateY(1.5px); filter: brightness(0.82); }

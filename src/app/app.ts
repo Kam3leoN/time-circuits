@@ -1,13 +1,14 @@
 /** Contrôleur principal : power, voyage, reset, son, thème, raccourcis clavier, langue. */
-import type { SetTo88, TimeCircuit } from '../components';
+import type { CapacitorOutput, FluxReset, NeedleGauge, PlutoniumChamber, SetTo88, TimeCircuit } from '../components';
 import { AudioManager, haptic } from './audio';
 import { readDigits } from './digits';
+import { FloatLayout } from './float-layout';
 import { applyStatic, dict, setLang, t } from './i18n';
 import { Keypad, type Mode } from './keypad';
 import { preloadWarp, warp } from './warp';
 import { SettingsPanel } from './settings';
 import { loadSettings, saveSettings, type Settings } from './storage';
-import { $, toast } from './ui';
+import { $, $maybe, toast } from './ui';
 
 const DEFAULTS = {
   destination: { month: 11, day: '12', year: '1955', hour: '06', minute: '39', second: '00', isAM: true },
@@ -23,6 +24,12 @@ export class App {
   readonly departed = $<TimeCircuit>('tcDeparted');
   readonly speed = $<SetTo88>('tcSpeed');
   readonly preview = $<TimeCircuit>('kpPreview');
+  /** Optionnels : un vieux cache PWA sans ces nœuds ne doit pas bloquer les time circuits. */
+  readonly gPower = $maybe<NeedleGauge>('gPower');
+  readonly gCapacitor = $maybe<CapacitorOutput>('gCapacitor');
+  readonly gChamber = $maybe<PlutoniumChamber>('gChamber');
+  readonly gReset = $maybe<FluxReset>('gReset');
+  readonly floats: FloatLayout | null;
   readonly keypad: Keypad;
   readonly settings: SettingsPanel;
 
@@ -30,11 +37,16 @@ export class App {
   travelling = false;
   resetCount = 0;
   buffer = '';
+  /** Niveau plutonium 0–1 (pilote chambre, capacitor, aiguilles). */
+  fluxLevel = 0;
 
   constructor() {
     const circuits: Record<Mode, TimeCircuit> = { destination: this.dest, present: this.present, departed: this.departed };
     this.keypad = new Keypad(circuits, this.audio, (m, d) => this.applyDigits(m, d), () => this.setActive('bDate', false));
-    this.settings = new SettingsPanel(this.s, (k) => this.onSetting(k), () => this.setActive('bOptions', false));
+    this.settings = new SettingsPanel(this.s, (k) => this.onSetting(k), () => this.setActive('bOptions', false), () => this.resetFloats());
+
+    const layer = document.getElementById('tcFloats');
+    this.floats = layer ? new FloatLayout(layer, this.s) : null;
 
     preloadWarp();
     this.dest.update(DEFAULTS.destination);
@@ -50,6 +62,7 @@ export class App {
     this.bind('bTheme', () => this.toggleTheme());
     this.bind('bFullscreen', () => { void this.settings.toggleFullscreen(); this.audio.play('button'); });
     this.bind('bOptions', () => { this.setActive('bOptions', true); this.settings.sync(); this.settings.modal.show(); this.audio.play('button'); });
+    this.gReset?.addEventListener('press', () => this.reset());
     if (!document.fullscreenEnabled) $('bFullscreen').hidden = true;
     document.addEventListener('keydown', (e) => this.onKey(e));
 
@@ -57,6 +70,22 @@ export class App {
     this.audio.musicEnabled = this.s.music;
     this.applyAll();
     this.settings.sync();
+  }
+
+  resetFloats(): void {
+    this.floats?.reset();
+    this.audio.play('button');
+    toast(t('floatsReset'));
+  }
+
+  /** Propage le niveau flux vers les instruments (no-op si absents du DOM). */
+  setFlux(level: number, backlight?: boolean): void {
+    this.fluxLevel = Math.max(0, Math.min(1, level));
+    const v = this.fluxLevel;
+    const lit = backlight ?? this.power;
+    if (this.gPower) { this.gPower.value = 0.95 * v; this.gPower.backlight = lit; }
+    if (this.gCapacitor) this.gCapacitor.value = v;
+    if (this.gChamber) this.gChamber.value = v;
   }
 
   /* ----- réglages ----- */
@@ -83,12 +112,27 @@ export class App {
     this.speed.setAttribute('unit', t('speedUnit'));
     this.speed.title = t('speedTitle');
 
+    this.#applyInstrumentLabels();
+
     const p = this.panel.dataset;
     p.fmt = String(s.format); p.sec = s.seconds ? 'on' : 'off'; p.frame = s.frame; p.themePanel = s.theme;
     this.#icons();
     applyStatic();
     this.keypad.relabel();
     document.title = t('appTitle');
+  }
+
+  /** Libellés i18n des instruments flottants. */
+  #applyInstrumentLabels(): void {
+    const pct = t('gPercent');
+    const pwr = t('gPower');
+    const strip = (text: string, dy: number, minW: number) =>
+      `${text}|${dy}|${Math.max(minW, text.length * 11)}`;
+    this.gPower?.setAttribute('strips', `${strip(pct, -13, 100)};${strip(pwr, 7, 78)}`);
+    this.gChamber?.setAttribute('label-empty', t('gEmpty'));
+    this.gChamber?.setAttribute('label-unit', t('gRoentgens'));
+    this.gChamber?.setAttribute('label-title', t('gChamber'));
+    this.gReset?.setAttribute('label', t('gReset'));
   }
 
   onSetting(key: keyof Settings): void {
@@ -118,6 +162,7 @@ export class App {
     this.setActive('bPower', on);
     this.panel.dataset.power = on ? 'on' : 'off';
     document.body.dataset.power = this.panel.dataset.power;
+    this.setFlux(on ? 1 : 0, on);
     if (!on) {
       this.buffer = '';
       this.speed.cancel();
@@ -144,6 +189,7 @@ export class App {
 
   async travel(): Promise<void> {
     if (this.travelling || !this.requirePower()) return;
+    if (this.fluxLevel <= 0.03) { this.audio.play('error'); return; }
     const d = this.dest.getDateTime();
     if (![d.month, d.day, d.year, d.hour, d.minute].every((v) => v.trim())) { this.audio.play('error'); return; }
     this.travelling = true;
@@ -153,15 +199,20 @@ export class App {
     this.audio.play('success');
     this.audio.play('buzz');
     this.audio.startMusic();
+    // Le voyage consomme la chambre à plutonium.
+    this.setFlux(0);
     const ok = await this.speed.run({ hold: 250 });
     if (ok) {
       this.audio.play('zap');
       haptic(120);
-      // Écran noir + éclairs ; la nouvelle date s'affiche pendant l'effet, prête au retour.
-      const w = warp(2000);
+      // Écran noir + éclairs + StormBTTF ; musique de fond en fondu rapide jusqu'à la fin de l'orage.
+      const stormMs = this.audio.playStorm();
+      const w = warp(stormMs);
       await new Promise((r) => setTimeout(r, 900));
       this.present.update(this.dest.getDateTime());
       await w;
+      // Juste après les éclairs / fondu musique : punchline « nom de Zeus ».
+      this.audio.play('nomdezeus', 0.9);
       const a = this.present.getDateTime();
       toast(dict().arrived(this.s.lang === 'fr' ? `${a.day} ${a.month} ${a.year}` : `${a.month} ${a.day} ${a.year}`));
     }
@@ -176,6 +227,7 @@ export class App {
     else { this.resetCount = 0; this.dest.update(DEFAULTS.destination); this.departed.update(DEFAULTS.departed); }
     this.speed.reset();
     this.present.live = true;
+    this.setFlux(1, true);
     this.setActive('bReset', true);
     setTimeout(() => this.setActive('bReset', false), 300);
   }

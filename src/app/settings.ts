@@ -19,8 +19,14 @@ export class SettingsPanel {
   readonly modal: Modal;
   #installEvent: BeforeInstallPromptEvent | null = null;
 
-  constructor(private readonly s: Settings, onChange: (key: keyof Settings) => void, onClose: () => void) {
+  constructor(
+    private readonly s: Settings,
+    onChange: (key: keyof Settings) => void,
+    onClose: () => void,
+    onResetFloats?: () => void,
+  ) {
     this.modal = new Modal($('op'), onClose);
+    document.getElementById('btnResetFloats')?.addEventListener('click', () => onResetFloats?.());
     $('op').addEventListener('change', (e) => {
       const input = e.target as HTMLInputElement;
       const key = input.name as keyof Settings;

@@ -7,3 +7,4 @@ export { TimeCircuit, MONTHS_BY_LANG, LABELS_BY_LANG, parseValue, normLang } fro
 export type { Lang, DateTimeFields, DateTimePatch } from './time-circuit';
 export { SetTo88 } from './set-to-88';
 export type { RunOptions } from './set-to-88';
+export { NeedleGauge, FluxReset, CapacitorOutput, PlutoniumChamber } from './flux';

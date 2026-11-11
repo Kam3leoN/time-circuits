@@ -5,6 +5,10 @@ export const $ = <T extends HTMLElement = HTMLElement>(id: string): T => {
   return el as T;
 };
 
+/** Comme `$`, mais `null` si l’élément manque (évite de planter toute l’app). */
+export const $maybe = <T extends HTMLElement = HTMLElement>(id: string): T | null =>
+  document.getElementById(id) as T | null;
+
 let toastTimer: number | undefined;
 export function hideToast(): void { window.clearTimeout(toastTimer); $('toast').hidden = true; }
 

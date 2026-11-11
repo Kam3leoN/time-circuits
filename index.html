@@ -24,15 +24,29 @@
   <div class="rotate" role="note"><span data-icon="rotate-phone"></span><p data-i18n="rotate"></p></div>
 
   <main class="tc" id="tc" data-theme-panel="dark" data-power="off">
-    <div class="tc-core">
-      <div class="tc-stack">
-        <time-circuit id="tcDest" color="red" label-rotate="random" value="1955-11-12T06:39"></time-circuit>
-        <time-circuit id="tcPresent" color="green" label-rotate="random" live></time-circuit>
-        <time-circuit id="tcDeparted" color="amber" label-rotate="random" value="1985-10-26T01:21"></time-circuit>
+    <!-- 3 modules centrés verticalement -->
+    <div class="tc-stack">
+      <time-circuit id="tcDest" color="red" label-rotate="random" value="1955-11-12T06:39"></time-circuit>
+      <time-circuit id="tcPresent" color="green" label-rotate="random" live></time-circuit>
+      <time-circuit id="tcDeparted" color="amber" label-rotate="random" value="1985-10-26T01:21"></time-circuit>
+      <span class="tc-dmc" data-icon="dmc" aria-hidden="true"></span>
+    </div>
+
+    <!-- Instruments flottants (drag & drop · positions dans localStorage) -->
+    <div class="tc-floats" id="tcFloats" data-i18n-aria="gInstruments">
+      <div class="tc-float" data-float="capacitor" style="--fx:2;--fy:12">
+        <capacitor-output id="gCapacitor" value="0"></capacitor-output>
       </div>
-      <div class="tc-bottom">
-        <span class="tc-rad" data-icon="radiation"></span>
-        <span class="tc-dmc" data-icon="dmc"></span>
+      <div class="tc-float" data-float="power" style="--fx:1.5;--fy:48">
+        <needle-gauge id="gPower" value="0" backlight="off" plate="off" strips="POURCENT|-13|100;PUISSANCE|7|99"></needle-gauge>
+      </div>
+      <div class="tc-float" data-float="chamber" style="--fx:78;--fy:10">
+        <plutonium-chamber id="gChamber" value="0" label-empty="VIDE" label-unit="ROENTGENS" label-title="CHAMBRE À PLUTONIUM"></plutonium-chamber>
+      </div>
+      <div class="tc-float" data-float="reset" style="--fx:84;--fy:52">
+        <flux-reset id="gReset" label="RESET"></flux-reset>
+      </div>
+      <div class="tc-float" data-float="speed" style="--fx:82;--fy:74">
         <set-to-88 id="tcSpeed" layout="top" label-rotate="random"></set-to-88>
       </div>
     </div>
@@ -116,6 +130,11 @@
           <label><input type="radio" name="music" value="off"><span data-i18n="no"></span></label>
           <label><input type="radio" name="music" value="on"><span data-i18n="yes"></span></label>
         </div></div>
+      <div class="op-row"><span data-i18n="oFloats"></span>
+        <div class="op-actions">
+          <button type="button" class="btn" id="btnResetFloats"><i data-icon="reset"></i><span data-i18n="resetFloats"></span></button>
+        </div>
+      </div>
       <div class="op-row"><span data-i18n="oApp"></span>
         <div class="op-actions">
           <button type="button" class="btn" id="btnFullscreen"><i data-icon="fullscreen"></i><span></span></button>
